@@ -1,0 +1,10 @@
+<launch>
+  <!-- Arguments -->
+  <arg name="model" default="$(env ROVER_MODEL)" doc="model type [turtlebro, brover]"/>
+  <arg name="open_rviz" default="false"/>
+  <arg name="use_sim_time" default="false"/>
+  
+  <include file="$(find turtlebro_navigation)/launch/slam_toolbox.xml"/>
+  <include file="$(find turtlebro_navigation)/launch/nav2_bringup.xml"/>
+
+</launch>  
