@@ -34,7 +34,7 @@ def generate_launch_description():
     declare_slam_params_file_cmd = DeclareLaunchArgument(
         'slam_params_file',
         default_value=os.path.join(get_package_share_directory("turtlebro_navigation"),
-                                   'config', 'mapper_params_online_async.yaml'),
+                                   'config', 'slam_toolbox.yaml'),
         description='Full path to the ROS2 parameters file to use for the slam_toolbox node')
 
     start_async_slam_toolbox_node = LifecycleNode(
@@ -49,7 +49,10 @@ def generate_launch_description():
         executable='async_slam_toolbox_node',
         name='slam_toolbox',
         output='screen',
-        namespace=''
+        namespace='',
+        remappings=[
+                ('/pose', '/slam_pose'),
+        ]
     )
 
     configure_event = EmitEvent(
@@ -59,6 +62,8 @@ def generate_launch_description():
         ),
         condition=IfCondition(AndSubstitution(autostart, NotSubstitution(use_lifecycle_manager)))
     )
+
+    
 
     activate_event = RegisterEventHandler(
         OnStateTransition(
