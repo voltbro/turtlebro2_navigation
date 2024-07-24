@@ -1,49 +1,49 @@
-amcl:
-  ros__parameters:
-    alpha1: 0.2
-    alpha2: 0.2
-    alpha3: 0.2
-    alpha4: 0.2
-    alpha5: 0.2
-    base_frame_id: "base_footprint"
-    beam_skip_distance: 0.5
-    beam_skip_error_threshold: 0.9
-    beam_skip_threshold: 0.3
-    do_beamskip: false
-    global_frame_id: "map"
-    lambda_short: 0.1
-    laser_likelihood_max_dist: 2.0
-    laser_max_range: 100.0
-    laser_min_range: -1.0
-    laser_model_type: "likelihood_field"
-    max_beams: 60
-    max_particles: 2000
-    min_particles: 500
-    odom_frame_id: "odom"
-    pf_err: 0.05
-    pf_z: 0.99
-    recovery_alpha_fast: 0.0
-    recovery_alpha_slow: 0.0
-    resample_interval: 1
-    robot_model_type: "nav2_amcl::DifferentialMotionModel"
-    save_pose_rate: 0.5
-    sigma_hit: 0.2
-    tf_broadcast: true
-    transform_tolerance: 1.0
-    update_min_a: 0.2
-    update_min_d: 0.25
-    z_hit: 0.5
-    z_max: 0.05
-    z_rand: 0.5
-    z_short: 0.05
-    scan_topic: scan
+# amcl:
+#   ros__parameters:
+#     alpha1: 0.2
+#     alpha2: 0.2
+#     alpha3: 0.2
+#     alpha4: 0.2
+#     alpha5: 0.2
+#     base_frame_id: "base_footprint"
+#     beam_skip_distance: 0.5
+#     beam_skip_error_threshold: 0.9
+#     beam_skip_threshold: 0.3
+#     do_beamskip: false
+#     global_frame_id: "map"
+#     lambda_short: 0.1
+#     laser_likelihood_max_dist: 2.0
+#     laser_max_range: 100.0
+#     laser_min_range: -1.0
+#     laser_model_type: "likelihood_field"
+#     max_beams: 60
+#     max_particles: 2000
+#     min_particles: 500
+#     odom_frame_id: "odom"
+#     pf_err: 0.05
+#     pf_z: 0.99
+#     recovery_alpha_fast: 0.0
+#     recovery_alpha_slow: 0.0
+#     resample_interval: 1
+#     robot_model_type: "nav2_amcl::DifferentialMotionModel"
+#     save_pose_rate: 0.5
+#     sigma_hit: 0.2
+#     tf_broadcast: true
+#     transform_tolerance: 1.0
+#     update_min_a: 0.2
+#     update_min_d: 0.25
+#     z_hit: 0.5
+#     z_max: 0.05
+#     z_rand: 0.5
+#     z_short: 0.05
+#     scan_topic: scan
 
 bt_navigator:
   ros__parameters:
     use_sim_time: true
     global_frame: map
     robot_base_frame: base_link
-    transform_tolerance: 0.1
+    transform_tolerance: 1.0
 
     # default_nav_to_pose_bt_xml: $(find-pkg-share my_package)/behavior_tree/nav_to_pose_bt.xml # or $(find-pkg-share my_package)/behavior_tree/my_nav_to_pose_bt.xml
     # default_nav_through_poses_bt_xml: $(find-pkg-share my_package)/behavior_tree/nav_through_poses_bt.xml # or $(find-pkg-share my_package)/behavior_tree/my_nav_through_poses_bt.xml
@@ -68,21 +68,22 @@ collision_monitor:
     odom_frame_id: "odom"
     cmd_vel_in_topic: "cmd_vel_smoothed"
     cmd_vel_out_topic: "cmd_vel"
-    transform_tolerance: 0.5
+    transform_tolerance: 1.0
     source_timeout: 5.0
     stop_pub_timeout: 2.0
     enable_stamped_cmd_vel: False
     polygons: ["PolygonStop", "PolygonSlow"]
     PolygonStop:
       type: "polygon"
-      points: "[[0.2, 0.15], [0.2, -0.15], [0.0, -0.15], [0.0, 0.15]]"
+      points: "[[0.1, 0.15], [0.1, -0.15], [-0.1, -0.15], [-0.1, 0.15]]"
+      
       action_type: "stop"
       min_points: 4  # max_points: 3 for Humble
       visualize: True
       polygon_pub_topic: "polygon_stop"
     PolygonSlow:
       type: "polygon"
-      points: "[[0.3, 0.2], [0.3, -0.2], [0.0, -0.2], [0.0, 0.2]]"
+      points: "[[0.15, 0.2], [0.15, -0.2], [-0.15, -0.2], [-0.15, 0.2]]"
       action_type: "slowdown"
       min_points: 4  # max_points: 3 for Humble
       slowdown_ratio: 0.3
@@ -97,13 +98,13 @@ collision_monitor:
 controller_server:
   ros__parameters:
     use_sim_time: True
-    controller_frequency: 8.0
+    controller_frequency: 12.0
     min_x_velocity_threshold: 0.001
     min_y_velocity_threshold: 0.5
     min_theta_velocity_threshold: 0.001
     failure_tolerance: 0.3
     odom_topic: "odom"
-    progress_checker_plugin: "progress_checker"
+    progress_checker_plugin: ["progress_checker"]
     goal_checker_plugins: ["general_goal_checker"] # "precise_goal_checker"
     controller_plugins: ["FollowPath"]
 
@@ -121,19 +122,19 @@ controller_server:
     general_goal_checker:
       stateful: True
       plugin: "nav2_controller::SimpleGoalChecker"
-      xy_goal_tolerance: 0.25
+      xy_goal_tolerance: 0.07
       yaw_goal_tolerance: 0.25
     # DWB parameters
     FollowPath:
       plugin: "dwb_core::DWBLocalPlanner"
       debug_trajectory_details: True
-      min_vel_x: 0.0
+      min_vel_x: -0.18
       min_vel_y: 0.0
-      max_vel_x: 0.26
+      max_vel_x: 0.18
       max_vel_y: 0.0
       max_vel_theta: 1.0
       min_speed_xy: 0.0
-      max_speed_xy: 0.26
+      max_speed_xy: 0.18
       min_speed_theta: 0.0
       # Add high threshold velocity for turtlebot 3 issue.
       # https://github.com/ROBOTIS-GIT/turtlebot3_simulations/issues/75
@@ -149,8 +150,8 @@ controller_server:
       sim_time: 1.7
       linear_granularity: 0.05
       angular_granularity: 0.025
-      transform_tolerance: 0.2
-      xy_goal_tolerance: 0.25
+      transform_tolerance: 1.0
+      xy_goal_tolerance: 0.07
       trans_stopped_velocity: 0.25
       short_circuit_trajectory_evaluation: True
       stateful: True
@@ -169,16 +170,18 @@ controller_server:
 local_costmap:
   local_costmap:
     ros__parameters:
-      update_frequency: 5.0
+      update_frequency: 4.0
       publish_frequency: 2.0
       global_frame: odom
       robot_base_frame: base_link
       use_sim_time: True
       rolling_window: true
-      width: 3
-      height: 3
+      width: 2
+      height: 2
       resolution: 0.06
-      robot_radius: 0.175
+      # robot_radius: 0.175
+      footprint: "[[0.06,0.10], [0.0,0.115], [-0.14,0.10], [-0.14,-0.10], [0.0,-0.115], [0.06,-0.10]]"
+
       plugins: ["static_layer", "voxel_layer", "inflation_layer"]
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
@@ -212,8 +215,8 @@ local_costmap:
 global_costmap:
   global_costmap:
     ros__parameters:
-      update_frequency: 1.0
-      publish_frequency: 1.0
+      update_frequency: 0.5
+      publish_frequency: 0.5
       global_frame: map
       robot_base_frame: base_link
       use_sim_time: True
@@ -298,7 +301,7 @@ behavior_server:
     local_frame: odom
     global_frame: map
     robot_base_frame: base_link
-    transform_tolerance: 0.1
+    transform_tolerance: 1.0
     simulate_ahead_time: 2.0
     max_rotational_vel: 1.0
     min_rotational_vel: 0.4
@@ -336,7 +339,7 @@ velocity_smoother:
 
 docking_server:
   ros__parameters:
-    controller_frequency: 50.0
+    controller_frequency: 10.0
     initial_perception_timeout: 5.0
     wait_charge_timeout: 5.0
     dock_approach_timeout: 30.0
