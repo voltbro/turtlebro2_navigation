@@ -26,6 +26,7 @@ endif()
 install(DIRECTORY
   launch
   config
+  behavior_tree
   DESTINATION share/${PROJECT_NAME}/
 )
 
